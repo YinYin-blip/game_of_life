@@ -1,8 +1,6 @@
 import pygame
 import math
 
-CELL_SIZE = 10
-CELL_SPACING = 1
 
 class Board:
     def __init__(self, col, row):

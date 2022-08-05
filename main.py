@@ -2,13 +2,10 @@ import pygame
 import time
 import math
 
+from config import board_conf 
 from board import *
 
-CELL_SIZE = 10
-CELL_SPACING = 1
-pygame.init()
-
-def main():
+def main(CELL_SIZE, CELL_SPACING):
     col = 40
     row = 30
     board = Board(col, row)
@@ -75,4 +72,6 @@ def fromLocationToGrid(pos):
     return grid
 
 if __name__ == "__main__":
-    main()
+    config = dict(board_conf.__dict__)
+    pygame.init()
+    main(config["CELL_SIZE"], config["CELL_SPACING"])
