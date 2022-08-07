@@ -1,25 +1,15 @@
 import pygame
 import math
+import time
 
 
 class Board:
-    def __init__(self, col, row):
-        self.col = col
-        self.row = row
+    def __init__(self, config):
+        self.col = config["BOARD_COLUMN_COUNT"] 
+        self.row = config["BOARD_ROW_COUNT"] 
         self.state = []
         for _ in range(self.row):
             self.state.append('0'*self.col)
-
-    def isValidState(self):
-        if self.row != len(self.state):
-            return False
-        for row in self.state:
-            if len(row) != self.col:
-                return False
-            for animal in row:
-                if animal != 1 or animal != 0:
-                    return False
-        return True
 
     def toggleCell(self, cell):
         if self.getCellState(cell) == '0':
@@ -30,8 +20,13 @@ class Board:
             return self.state[cell[1]][cell[0]]
         else:
             return self.getCellState(cell)
+    
+    def setCell(self, cell, state='0'):
+        # Individual changes to animals in board
+        self.state[cell[1]] = self.state[cell[1]][:cell[0]]+"1"+self.state[cell[1]][cell[0]+1:]
 
     def setState(self, state):
+        # Bulk import of entire state of board
         self.state = state
 
     def getState(self, state):
@@ -39,6 +34,7 @@ class Board:
 
     def getNextGeneration(self, state=[], offset = 0):
         newState = []
+        startTime = time.time()
         for rowIndex, row in enumerate(self.state):
             newRow = ''
             for colIndex, col in enumerate(row):
@@ -66,7 +62,7 @@ class Board:
                 else:
                     assert(self.getCellState(cell) == '0' or self.getCellState(cell) == "1")
             newState.append(newRow)
-        print(newState)
+        endTime = time.time()
         return newState
 
     def getCellState(self, cell):
