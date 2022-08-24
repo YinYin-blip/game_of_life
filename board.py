@@ -20,6 +20,45 @@ class Board:
             return self.state[cell[1]][cell[0]]
         else:
             return self.getCellState(cell)
+
+    def importBoardState(self, file_name):
+        state = []
+        with open(file_name, "r") as f:
+            for line in f:
+                line = line.replace("\n", "")
+                state.append(line)
+        self.state = state
+
+
+    def exportBoardState(self, state=None):
+        # THIS FUNCTION CAN BE USED TO SAVE THE STATE, IT WILL CREATE A NEW TXT FILE FOR THE STATE
+        cwd = os.getcwd()
+        print(cwd)
+        # Filter files based on board state naming convention [b1.txt, b2.txt, ..., bn.txt]
+        files = [f for f in glob.glob(cwd + "/*.txt")]
+        print(len(files))
+
+        new_index = 1
+
+        # GET CURRENT STATE
+        if not state:
+            state = self.state
+
+        # FIND A NEW FILE NAME
+        if files:
+            last_name = None
+            # Return the last saved state
+            for file in files:
+                print(file)
+                last_name = file.split("/")[-1]
+            new_index = int(last_name[1:last_name.find(".")]) + 1
+
+        # CREATE NEW SAVE FILE
+        new_file_name = "b"+str(new_index)+".txt"
+        print("newf", new_file_name)
+        with open(new_file_name, "w") as f:
+            text = "\n".join(state)
+            f.write(text)
     
     def setCell(self, cell, state='0'):
         # Individual changes to animals in board
