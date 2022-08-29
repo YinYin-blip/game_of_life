@@ -7,6 +7,7 @@ class Board:
     def __init__(self, config):
         self.col = config["BOARD_COLUMN_COUNT"] 
         self.row = config["BOARD_ROW_COUNT"] 
+        self.save_dir = config["SAVE_DIR"]
         self.state = []
         for _ in range(self.row):
             self.state.append('0'*self.col)
@@ -31,31 +32,48 @@ class Board:
 
 
     def exportBoardState(self, state=None):
+        # This function is a bit of a hack. Creates new file index based on the number of files in the "saves" +1
+        # This function can overwrite another save if save files are deleted
+
         # THIS FUNCTION CAN BE USED TO SAVE THE STATE, IT WILL CREATE A NEW TXT FILE FOR THE STATE
         cwd = os.getcwd()
-        print(cwd)
-        # Filter files based on board state naming convention [b1.txt, b2.txt, ..., bn.txt]
-        files = [f for f in glob.glob(cwd + "/*.txt")]
-        print(len(files))
 
-        new_index = 1
+        try:
+            os.mkdir(cwd+self.save_dir)
+        except FileExistsError:
+            print("Save file already exists") 
+
+        # Filter files based on board state naming convention [b1.txt, b2.txt, ..., bn.txt]
+        files = [f for f in glob.glob(cwd + "/" + self.save_dir + "*.txt")]
 
         # GET CURRENT STATE
         if not state:
             state = self.state
 
+        highest_index = len(files)+1
+        new_file_name = self.save_dir + "b" + str(highest_index) + ".txt"
+
+        '''
+        # TODO: At the moment this function doesn't work properly. Most likely an issue with incrementing the highest_index after loop
+        highest_index = 0
         # FIND A NEW FILE NAME
         if files:
-            last_name = None
             # Return the last saved state
             for file in files:
                 print(file)
-                last_name = file.split("/")[-1]
-            new_index = int(last_name[1:last_name.find(".")]) + 1
-
+                file_name = file.split("/")[-1]
+                current_index = int(file_name[1:file_name.rfind(".")])
+                print("Highest_index:", highest_index)
+                print("current_index:", current_index)
+                if current_index > highest_index:
+                    print("Updating highest index", current_index)
+                    highest_index = current_index 
+                print("============================")
+            highest_index += 1 
         # CREATE NEW SAVE FILE
-        new_file_name = "b"+str(new_index)+".txt"
-        print("newf", new_file_name)
+        new_file_name = 'b'+ str(highest_index) + '.txt'
+        '''
+
         with open(new_file_name, "w") as f:
             text = "\n".join(state)
             f.write(text)
