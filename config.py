@@ -6,3 +6,4 @@ class board_conf:
     SAVE_DIR = "saves/"
     SLEEP_TIME = 0.02
     IS_SAVE_MODE = True 
+    MAX_BOARD_SIZE = 256
