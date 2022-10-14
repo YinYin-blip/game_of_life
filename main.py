@@ -1,5 +1,4 @@
 import pygame
-import time
 import math
 
 from config import board_conf 
@@ -7,6 +6,9 @@ from board import *
 
 def main(config):
     print(config)
+    if config["BOARD_ROW_COUNT"] or config["BOARD_COLUMN_COUNT"] < config["MAX_BOARD_SIZE"]:
+        print(f"Board dimensions must be within {config['MAX_BOARD_SIZE']}x{config['MAX_BOARD_SIZE']}")
+
     CELL_SIZE = config["CELL_SIZE"]
     CELL_SPACING = config["CELL_SPACING"]
     square_space = CELL_SIZE + CELL_SPACING
@@ -39,8 +41,8 @@ def main(config):
     isPlay = False
 
     while not gameExit:
-        toggleDraw = False
-        gameTicker = False
+        toggle_draw = False
+        game_ticker = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 gameExit = True

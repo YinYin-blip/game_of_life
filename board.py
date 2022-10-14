@@ -30,10 +30,6 @@ class Cell:
         return tuple(self._cell_size*x for x in self._coordinates)
 
 
-def set_cell_is_alive(cell, state='0'):
-    cell.set_is_alive(state)
-
-
 class Board:
     def __init__(self, config):
         self.col = config["BOARD_COLUMN_COUNT"] 
