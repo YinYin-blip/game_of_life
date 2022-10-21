@@ -6,7 +6,7 @@ from board import *
 
 def main(config):
     print(config)
-    if config["BOARD_ROW_COUNT"] or config["BOARD_COLUMN_COUNT"] < config["MAX_BOARD_SIZE"]:
+    if config["BOARD_ROW_COUNT"] > config["MAX_BOARD_SIZE"] or config["BOARD_COLUMN_COUNT"] > config["MAX_BOARD_SIZE"]:
         print(f"Board dimensions must be within {config['MAX_BOARD_SIZE']}x{config['MAX_BOARD_SIZE']}")
 
     CELL_SIZE = config["CELL_SIZE"]
@@ -33,7 +33,7 @@ def main(config):
     for row in board.state:
         for cell in row:
             coordinates = cell.get_coordinates()
-            col, row = coordinates[1], coordinates[0]
+            col, row = coordinates[0], coordinates[1]
             pygame.draw.rect(gameDisplay, (0, 0, 0), ((col * square_space, row * square_space), (CELL_SIZE, CELL_SIZE)))
 
     pygame.display.update()
@@ -113,7 +113,7 @@ def draw(board, display, square_space, CELL_SIZE):
     for row in board.state:
         for cell in row:
             coordinates = cell.get_coordinates()
-            col, row = coordinates[1], coordinates[0]
+            col, row = coordinates[0], coordinates[1]
             if cell.get_is_alive():
                 pygame.draw.rect(display, (255, 255, 0), ((col * (square_space), row * (square_space)), (CELL_SIZE, CELL_SIZE)))
             else:
