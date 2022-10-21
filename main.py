@@ -39,6 +39,7 @@ def main(config):
     pygame.display.update()
     gameExit = False
     isPlay = False
+    is_heat_map = False
 
     while not gameExit:
         toggle_draw = False
@@ -96,7 +97,18 @@ def main(config):
                         pygame.event.set_allowed(pygame.KEYDOWN)
                         isPlay = True
 
-                        
+                    #draw as heatmap
+                    if event.key == pygame.key.key_code("x"):
+                        # This section will toggle the heat_map view
+                        is_heat_map = not is_heat_map
+                        draw(board, gameDisplay, square_space, CELL_SIZE)
+                        heat_map = board.heatmap.set_as_colour_map()
+                        if is_heat_map:
+                            draw_heat_map(heat_map, gameDisplay, square_space, CELL_SIZE)
+                        else:
+                            draw(board, gameDisplay, square_space, CELL_SIZE)
+
+
 def drawCell(board, display, cell_coordinates, square_space, CELL_SIZE):
     col, row = cell_coordinates[0], cell_coordinates[1]
     cell = board.get_cell(cell_coordinates)
@@ -129,6 +141,18 @@ def fromLocationToGrid(pos, square_space):
     grid = (math.floor(x/(square_space)),math.floor(y/(square_space)))
 
     return grid
+
+def draw_heat_map(colour_map, display, square_space, CELL_SIZE):
+    startTime = time.time()
+    for y, row in enumerate(colour_map.state):
+        for x, cell_rgb in enumerate(row):
+            coordinates = (y, x)
+            x, y = coordinates[1], coordinates[0]
+            pygame.draw.rect(display, cell_rgb, ((x * (square_space), y * (square_space)), (CELL_SIZE, CELL_SIZE)))
+
+    pygame.display.update()
+    endTime = time.time()
+
 
 if __name__ == "__main__":
     config = dict(board_conf.__dict__)

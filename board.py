@@ -2,7 +2,7 @@ import time
 import os
 import glob
 
-
+# TODO: test that heatmap works by adding a way to render the heatmap on the frontend code
 class Cell:
     # Cell has location and coordinates
     # Coordinates are private variables
@@ -37,6 +37,7 @@ class Board:
         self._cell_size = config["CELL_SIZE"]
         self.save_dir = config["SAVE_DIR"]
         self.state = []
+        self.heatmap = HeatMap(config)
         for _ in range(self.row):
             self.state.append(Cell((0, _), CELL_SIZE=self._cell_size)*self.col)
 
@@ -53,8 +54,10 @@ class Board:
             state += delim
         return state[:-1]
 
-    # Import exporting of states
-        # Board level operations
+    #def import_heatmap_state(self, file_name):
+
+    #def export_heatmap_state(self, delim=","):
+
     def import_board_state(self, file_name):
         # :param: FILE_NAME str - name of file that stores string representation of board state
         state = ''
@@ -108,6 +111,7 @@ class Board:
     def set_next_generation(self):
         start_time = time.time()
         temp_state = ''
+        self.heatmap + self.state
 
         for row in self.state:
             for cell in row:
@@ -167,3 +171,80 @@ class Board:
                 if cell and cell.get_is_alive():
                     count += 1
         return count
+
+
+class HeatMap():
+    def __init__(self, config):
+        self.row = config["BOARD_ROW_COUNT"]
+        self.col = config["BOARD_COLUMN_COUNT"]
+        self.state = [[0]*self.col for _ in range(self.row)]
+        self.config = config
+
+    def _generation_loader(self, new_generation):
+        binary_matrix = []
+        if isinstance(new_generation, str):
+            generation = new_generation.split(",")
+            for row in generation:
+                row_matrix = []
+                for cell in row:
+                    if cell == "0":
+                        row_matrix.append(0)
+                    else:
+                        row_matrix.append(1)
+
+                if len(row_matrix) > 0:
+                    binary_matrix.append(row_matrix)
+
+        elif isinstance(new_generation, list):
+            if isinstance(new_generation[0][0], Cell):
+                for row in new_generation:
+                    row_matrix = []
+                    for cell in row:
+                        if cell.get_is_alive():
+                            row_matrix.append(1)
+                        else:
+                            row_matrix.append(0)
+
+                    if len(row_matrix) > 0:
+                        binary_matrix.append(row_matrix)
+        assert len(binary_matrix) == self.row
+        assert len(binary_matrix[0]) == self.col
+        return binary_matrix
+
+    def __str__(self):
+        # Returns a string representation of state of the board
+        delim = ','
+        state = ''
+        for row in self.state:
+            for cell in row:
+                state += f"({cell[0]},{cell[1]},{cell[2]})"
+            state += delim
+        return state[:-1]
+
+    def __add__(self, new_generation):
+        generation = self._generation_loader(new_generation)
+        for y, row in enumerate(self.state):
+            for x, cell in enumerate(row):
+                #print(f"{(y, x)} {self.state[y][x]} {generation[y][x]}")
+                self.state[y][x] += generation[y][x]
+
+        self.set_as_colour_map()
+
+    def min_max(self):
+        low = min([min(row) for row in self.state])
+        high = max([max(row) for row in self.state])
+        return low, high
+
+    def set_as_colour_map(self):
+        mini_max = self.min_max()
+        low, high = mini_max[0], mini_max[1]
+        colour_map = HeatMap(self.config)
+        for y in range(self.row):
+            for x in range(self.col):
+                ratio = 2 * (self.state[y][x] - low) / (high - low)
+                b = int(max(0, 255 * (1 - ratio)))
+                r = int(max(0, 255 * (ratio - 1)))
+                g = 255 - b - r
+                colour_map.state[y][x] = (r, g, b)
+
+        return colour_map
