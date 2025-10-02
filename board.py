@@ -72,6 +72,7 @@ class Board:
         cwd = os.getcwd()
 
         try:
+            print(cwd+self.save_dir)
             os.mkdir(cwd+self.save_dir)
         except FileExistsError:
             print("Save file already exists") 
@@ -80,7 +81,7 @@ class Board:
         files = [f for f in glob.glob(cwd + "/" + self.save_dir + "*.txt")]
 
         highest_index = len(files)+1
-        new_file_name = self.save_dir + "b" + str(highest_index) + ".txt"
+        new_file_name = cwd + self.save_dir + "b" + str(highest_index) + ".txt"
 
         with open(new_file_name, "w") as f:
             text = str(self).replace(",", "\n")
